@@ -31,7 +31,8 @@ from collections import Counter
 x_train = train.iloc[:,:-1].values
 y_train = train.iloc[:,-1].values
 
-x_train = x_train/130.0
+max_value = x_train.max()
+x_train = x_train/(max_value+1)
 x_train = np.reshape(x_train,(x_train.shape[0], x_train.shape[1], 1))
 model = tf.keras.models.Sequential()
 
@@ -49,7 +50,7 @@ model.add(Dropout(0.1))
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.2))
 #
-model.add(Dense(130, activation='softmax'))
+model.add(Dense((max_value+1), activation='softmax'))
 
 model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001, decay=1e-6),
               loss='sparse_categorical_crossentropy',
@@ -72,7 +73,7 @@ print(test.head())
 print(test.shape)
 
 x_test = test.iloc[:,:-1].values
-x_test = x_test/130.0
+x_test = x_test/(max_value+1)
 x_test = np.reshape(x_test,(x_test.shape[0], x_test.shape[1], 1)) #))
 y_test = test.iloc[:,-1].values
 val_loss_val_acc = model.evaluate(x_test, y_test)
